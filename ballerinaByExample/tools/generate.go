@@ -222,7 +222,7 @@ func getExampleDirMeta() ExampleDirMeta {
     metaContent, err := ioutil.ReadFile(metaFile)
     meta := ExampleDirMeta {};
     if err != nil {
-        meta.GithubBBEBaseURL = defaultBBEBaseURL+"v"+getReleaseVersion();
+        meta.GithubBBEBaseURL = defaultBBEBaseURL+"v"+releaseVersion;
         return meta;
     }
     json.Unmarshal(metaContent, &meta)
@@ -230,7 +230,8 @@ func getExampleDirMeta() ExampleDirMeta {
 }
 
 func getReleaseVersion() string{
-    metadata, err := os.ReadFile(dataDir+"metadata.json")
+    metadataFile := dataDir+"metadata.json"
+    metadata, err := ioutil.ReadFile(metadataFile)
 	if err != nil {
 		panic(err)
 	}
