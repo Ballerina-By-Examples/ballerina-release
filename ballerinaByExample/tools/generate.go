@@ -1,29 +1,32 @@
 package main
 
 import (
-    "crypto/sha1"
-    "fmt"
-    "github.com/russross/blackfriday"
-    "io/ioutil"
-    "net/http"
-    "os"
-    "os/exec"
-    "path/filepath"
-    "regexp"
-    "strconv"
-    "strings"
-    "text/template"
-    "bytes"
-    "errors"
-    "encoding/json"
+	"bytes"
+	"crypto/sha1"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
+	"text/template"
+
+	"github.com/russross/blackfriday"
 )
 
-const defaultBBEBaseURL = "https://github.com/ballerina-platform/ballerina-distribution/tree/master"
+const defaultBBEBaseURL = "https://github.com/ballerina-platform/ballerina-distribution/tree/"
 
-var bbeDirMeta = getExampleDirMeta();
+var bbeDirMeta = getExampleDirMeta()
+var releaseVersion = getReleaseVersion()
 var cacheDir = filepath.FromSlash("/tmp/gobyexample-cache")
 var pygmentizeBin = filepath.FromSlash("ballerinaByExample/vendor/pygments/pygmentize")
 var templateDir = "ballerinaByExample/templates/"
+var dataDir = "../_data/swanlake-latest/"
 var examplesDir = os.Args[1]
 var version = os.Args[2]
 var siteDir = os.Args[3]
@@ -219,12 +222,23 @@ func getExampleDirMeta() ExampleDirMeta {
     metaContent, err := ioutil.ReadFile(metaFile)
     meta := ExampleDirMeta {};
     if err != nil {
-        meta.GithubBBEBaseURL = defaultBBEBaseURL;
+        meta.GithubBBEBaseURL = defaultBBEBaseURL+"v"+getReleaseVersion();
         return meta;
     }
     json.Unmarshal(metaContent, &meta)
     return meta;
 }
+
+func getReleaseVersion() string{
+    metadata, err := os.ReadFile(dataDir+"metadata.json")
+	if err != nil {
+		panic(err)
+	}
+    var result map[string]interface{}
+    json.Unmarshal(metadata, &result)
+
+    return result["version"].(string)
+} 
 
 func getBBECategories() []BBECategory {
     allBBEsFile := examplesDir + "/index.json"
