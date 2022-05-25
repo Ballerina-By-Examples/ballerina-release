@@ -238,6 +238,7 @@ func getReleaseVersion() string{
     var result map[string]interface{}
     json.Unmarshal(metadata, &result)
 
+    fmt.Println(result["version"].(string))
     return result["version"].(string)
 } 
 
@@ -638,7 +639,7 @@ func prepareExample(sourcePaths []string, example Example, currentExamplesList [
     example.FullCode = cachedPygmentize("bal", example.FullCode)
     // If an explicit "githubLink" meta property is not given for the BBE, use the default derived location
     if example.GithubLink == "" {
-        example.GithubLink = bbeDirMeta.GithubBBEBaseURL + "/examples/" + example.Id + "/"
+        example.GithubLink = bbeDirMeta.GithubBBEBaseURL + "v" + releaseVersion + "/examples/" + example.Id + "/"
     }
     if example.EnablePlayground {
         example.PlaygroundLink = generatePlaygroundLink(example);
